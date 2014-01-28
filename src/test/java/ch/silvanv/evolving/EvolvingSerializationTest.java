@@ -31,7 +31,7 @@ public class EvolvingSerializationTest {
     final Probe ret = unmarshal(marshal(probe));
 
     // Then
-    assertThat(ret.arg1(), is(4));
+    assertThat(ret.arg1(), is(3));
     assertThat(ret.arg2(), is("arg"));
 
     logger.info(ret.toString());
