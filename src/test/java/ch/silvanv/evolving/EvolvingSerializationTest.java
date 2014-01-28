@@ -16,35 +16,53 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.silvanv.evolving.Probe.Probe1;
+import ch.silvanv.evolving.Probe.Probe2;
+
 public class EvolvingSerializationTest {
   public final Logger logger = LoggerFactory.getLogger(EvolvingSerializationTest.class);
 
   @Test
-  public void test() {
+  public void testMarshaller() {
     // Given
-    final Probe probe = new Probe2(2, "arg");
+    final Probe probe = new Probe2(3, "arg");
 
     // When
     final Probe ret = unmarshal(marshal(probe));
 
     // Then
-    assertThat(ret.arg1(), is(2));
+    assertThat(ret.arg1(), is(4));
     assertThat(ret.arg2(), is("arg"));
 
     logger.info(ret.toString());
   }
 
   @Test
-  public void testOldVersionFromFile() {
+  public void testPreviousVersionFromFile() {
     // Given
-    final Path serializedProbe1FilePath = Paths.get("probe1.ser");
+    final Path serializedProbeFilePath = Paths.get("probe1.ser");
 
     // When
-    final Probe ret = unmarshalFromFile(serializedProbe1FilePath);
+    final Probe ret = unmarshalFromFile(serializedProbeFilePath);
 
     // Then
     assertThat(ret.arg1(), is(Integer.valueOf(1)));
     assertThat(ret.arg2(), is("default arg2"));
+
+    logger.info(ret.toString());
+  }
+
+  @Test
+  public void testActualVersionFromFile() {
+    // Given
+    final Path serializedProbeFilePath = Paths.get("probe2.ser");
+
+    // When
+    final Probe ret = unmarshalFromFile(serializedProbeFilePath);
+
+    // Then
+    assertThat(ret.arg1(), is(Integer.valueOf(2)));
+    assertThat(ret.arg2(), is("arg2"));
 
     logger.info(ret.toString());
   }

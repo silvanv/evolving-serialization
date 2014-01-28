@@ -1,6 +1,6 @@
 *.class
 
-# üackage Files #
+# package Files #
 *.jar
 *.war
 *.ear
@@ -13,3 +13,5 @@ build/
 .gradle/
 target/
 bin/
+/probe1.ser
+/probe2.ser
