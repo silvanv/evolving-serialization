@@ -1,26 +1,29 @@
 package ch.silvanv.evolving;
 
-import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
-
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
+/** Sample probe, which may evolve. */
 public interface Probe extends Serializable {
-  Integer arg1();
+  Integer arg1(); // was previously String
 
-  String arg2();
+  String arg2(); // has been added
 
   // implementations
 
-  // actual version
+  class Factory {
+    public static Probe probe(final Integer arg1, final String arg2) {
+      return new Probe2(arg1, arg2);
+    }
+  }
+
+  /** Actual version */
   class Probe2 implements Probe {
     private static final long serialVersionUID = 2L;
 
     private final Integer arg1; // type has changed from String to Integer
     private final String arg2; // new property has been added
 
-    public Probe2(Integer arg1, String arg2) {
+    private Probe2(Integer arg1, String arg2) {
       this.arg1 = arg1;
       this.arg2 = arg2;
     }
@@ -34,20 +37,15 @@ public interface Probe extends Serializable {
     public String arg2() {
       return arg2;
     }
-
-    @Override
-    public String toString() {
-      return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
-    }
   }
 
-  // previous version
+  /** Previous/Origin version */
   class Probe1 implements Probe {
     private static final long serialVersionUID = 1L;
 
     private final String arg1;
 
-    public Probe1(String arg1) {
+    private Probe1(String arg1) {
       this.arg1 = arg1;
     }
 
@@ -59,11 +57,6 @@ public interface Probe extends Serializable {
     @Override
     public String arg2() {
       return "default arg2"; // provide default
-    }
-
-    @Override
-    public String toString() {
-      return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
     }
   }
 }

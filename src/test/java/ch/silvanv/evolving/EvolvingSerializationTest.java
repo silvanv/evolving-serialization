@@ -1,5 +1,6 @@
 package ch.silvanv.evolving;
 
+import static ch.silvanv.evolving.Probe.Factory.probe;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -13,19 +14,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ch.silvanv.evolving.Probe.Probe1;
-import ch.silvanv.evolving.Probe.Probe2;
 
 public class EvolvingSerializationTest {
-  public final Logger logger = LoggerFactory.getLogger(EvolvingSerializationTest.class);
-
   @Test
   public void testMarshaller() {
     // Given
-    final Probe probe = new Probe2(3, "arg");
+    final Probe probe = probe(3, "arg");
 
     // When
     final Probe ret = unmarshal(marshal(probe));
@@ -33,12 +27,10 @@ public class EvolvingSerializationTest {
     // Then
     assertThat(ret.arg1(), is(3));
     assertThat(ret.arg2(), is("arg"));
-
-    logger.info(ret.toString());
   }
 
   @Test
-  public void testPreviousVersionFromFile() {
+  public void testUnmarshalPreviousVersion() {
     // Given
     final Path serializedProbeFilePath = Paths.get("probe1.ser");
 
@@ -46,34 +38,11 @@ public class EvolvingSerializationTest {
     final Probe ret = unmarshalFromFile(serializedProbeFilePath);
 
     // Then
-    assertThat(ret.arg1(), is(Integer.valueOf(1)));
+    assertThat(ret.arg1(), is(1));
     assertThat(ret.arg2(), is("default arg2"));
-
-    logger.info(ret.toString());
-  }
-
-  @Test
-  public void testActualVersionFromFile() {
-    // Given
-    final Path serializedProbeFilePath = Paths.get("probe2.ser");
-
-    // When
-    final Probe ret = unmarshalFromFile(serializedProbeFilePath);
-
-    // Then
-    assertThat(ret.arg1(), is(Integer.valueOf(2)));
-    assertThat(ret.arg2(), is("arg2"));
-
-    logger.info(ret.toString());
   }
 
   // support
-
-  public static void main(final String[] args) {
-    final EvolvingSerializationTest inst = new EvolvingSerializationTest();
-    inst.marshalToFile(new Probe1("1"), Paths.get("probe1.ser"));
-    inst.marshalToFile(new Probe2(2, "arg2"), Paths.get("probe2.ser"));
-  }
 
   public byte[] marshal(Object o) {
     try (final ByteArrayOutputStream binOut = new ByteArrayOutputStream();
@@ -109,5 +78,11 @@ public class EvolvingSerializationTest {
     } catch (ClassNotFoundException | IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /** Initially serialize the origin instance to a file. */
+  public static void main(final String[] args) {
+    // final EvolvingSerializationTest inst = new EvolvingSerializationTest();
+    // inst.marshalToFile(probe("1"), Paths.get("probe1.ser"));
   }
 }
