@@ -1,9 +1,3 @@
-*.class
-
-# package Files #
-*.jar
-*.war
-*.ear
 
 # build #
 .classpath
